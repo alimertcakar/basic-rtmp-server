@@ -1,19 +1,17 @@
 const fs = require("fs");
 const { WebSocketServer } = require("ws");
 const child_process = require("child_process");
-
 const https = require("https");
 
 const server = https.createServer({
   cert: fs.readFileSync("localcert.cert"),
   key: fs.readFileSync("localkey.key"),
 });
-
 const wss = new WebSocketServer({ server });
 
 wss.on("connection", (ws, req) => {
   console.log("On connection");
-  ws.send("Server hello");
+  ws.send("Server Hello");
   const rtmpUrl = "<RTML URL HERE>";
 
   const codecs = ["-vcodec", "libx264", "-acodec", "libmp3lame"];
@@ -46,16 +44,12 @@ wss.on("connection", (ws, req) => {
     "-i",
     "-",
     "pipe:0",
-    // used for audio sync
-    "-use_wallclock_as_timestamps",
-    "1",
-    "-async",
-    "1",
     ...codecs,
     ...videoPrms,
     ...audioPrms,
+    // use all threads
     "-threads",
-    "0", // use all threads
+    "0",
     // buffer size
     "-bufsize",
     "512",
